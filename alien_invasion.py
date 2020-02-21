@@ -32,8 +32,10 @@ class AlienInvasion:
 
         self._create_fleet()
 
-        # Make the play button.
-        self.play_button = Button(self, "Play")
+        # Make the play buttons -- TO REFACTOR.
+        self.play_button = Button(self, (0, 255, 0), 200, 50)
+        self.easy_button = Button(self, (0, 0, 255), 100, 50)
+        self.hard_button = Button(self, (255, 0, 0), 100, 50)
 
     def run_game(self):
         """Start the main loop for the game"""
@@ -60,6 +62,8 @@ class AlienInvasion:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
+                self._check_easy_button(mouse_pos)
+                self._check_hard_button(mouse_pos)
 
     def _check_play_button(self, mouse_pos):
         """Start a new game when the player clicks play."""
@@ -69,6 +73,18 @@ class AlienInvasion:
             self.settings.initialize_dynamic_settings()
             self.stats.game_active = True
             self._start_game()
+
+    def _check_easy_button(self, mouse_pos):
+        button_clicked = self.easy_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.stats.game_active:
+            self.settings.speedup_scale = 1.01
+            print(self.settings.speedup_scale)
+
+    def _check_hard_button(self, mouse_pos):
+        button_clicked = self.hard_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.stats.game_active:
+            self.settings.speedup_scale = 2.1
+            print(self.settings.speedup_scale)
 
     def _start_game(self):
         # reset game stats
@@ -187,7 +203,9 @@ class AlienInvasion:
 
         # Draw the play button if the game is inactive.
         if not self.stats.game_active:
-            self.play_button.draw_button()
+            self.play_button.draw_button("Play")
+            self.easy_button.draw_button("Easy", self.screen.get_rect().bottom, self.screen.get_rect().left)
+            self.hard_button.draw_button("Hard", self.screen.get_rect().bottom - 70, self.screen.get_rect().left)
 
         pygame.display.flip()
 
