@@ -77,18 +77,19 @@ class AlienInvasion:
     def _check_hard_button(self, mouse_pos):
         button_clicked = self.hard_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
-            self.stats.difficulty_modifier = 1
+            self.settings.difficulty_level = 'hard'
 
     def _check_crazy_button(self, mouse_pos):
         button_clicked = self.crazy_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
-            self.stats.difficulty_modifier = 2
+            self.settings.difficulty_level = 'crazy'
 
     def _start_game(self):
         # reset game stats
         self.stats.reset_stats()
         self.stats.game_active = True
         self.sb.prep_score()
+        self.sb.prep_level()
 
         # get rid of aliens and bullets
         self.aliens.empty()
@@ -100,6 +101,7 @@ class AlienInvasion:
 
         # Hide the mouse cursor
         pygame.mouse.set_visible(False)
+        self.settings.set_speedup_scale()
 
     def _check_keydown_events(self, event):
         """respond to key presses"""
@@ -157,6 +159,9 @@ class AlienInvasion:
             self.bullets.empty()
             self._create_fleet()
             self.settings.increase_speed()
+
+            self.stats.level += 1
+            self.sb.prep_level()
 
     def _update_aliens(self):
         """Check if fleet is at an edge, then update the positions of all aliens in the fleet"""
@@ -250,6 +255,7 @@ class AlienInvasion:
             sleep(0.5)
         else:
             self.stats.game_active = False
+            self.settings.reset_speed()
             pygame.mouse.set_visible(True)
 
     def _check_aliens_bottom(self):

@@ -21,7 +21,10 @@ class Settings:
         self.fleet_drop_speed = 10
 
         # How quickly the game speeds up
-        self.speedup_scale = 1.1
+        self.speedup_scale = 1.0
+
+        # How difficult...
+        self.difficulty_level = 'normal'
 
         # How quickly the alien point value increases
         self.score_scale = 1.5
@@ -35,6 +38,7 @@ class Settings:
         self.alien_speed = 1.0
         # fleet_direction of 1 represents right; -1 represents left.
         self.fleet_direction = 1
+        self.set_speedup_scale()
 
         # Scoring
         self.alien_points = 50
@@ -47,3 +51,17 @@ class Settings:
 
         self.alien_points = int(self.alien_points * self.score_scale)
 
+    def set_speedup_scale(self):
+        if self.difficulty_level == 'normal':
+            self.speedup_scale = 1.1
+        elif self.difficulty_level == 'hard':
+            self.speedup_scale = 1.5
+        elif self.difficulty_level == 'crazy':
+            self.speedup_scale = 2.0
+
+    def reset_speed(self):
+        """have to reset speeds to original values on endgame"""
+        self.difficulty_level = 'normal'
+        self.ship_speed = 1.5
+        self.bullet_speed = 3.0
+        self.alien_speed = 1.0
