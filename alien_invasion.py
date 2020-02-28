@@ -9,6 +9,7 @@ from button import Button
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
+from sound_effects import SoundEffects
 
 
 class AlienInvasion:
@@ -31,6 +32,7 @@ class AlienInvasion:
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
+        self.sound_effects = SoundEffects()
 
         self._create_fleet()
 
@@ -87,10 +89,7 @@ class AlienInvasion:
     def _start_game(self):
         # reset game stats
         self.stats.reset_stats()
-        self.stats.game_active = True
-        self.sb.prep_score()
-        self.sb.prep_level()
-        self.sb.prep_ships()
+        self.sb.prep_images()
 
         # get rid of aliens and bullets
         self.aliens.empty()
@@ -132,6 +131,7 @@ class AlienInvasion:
         if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
+            self.sound_effects.play_shoot()
 
     def _update_bullets(self):
         """Update position of bullets and get rid of old bullets."""
@@ -154,15 +154,20 @@ class AlienInvasion:
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
             self.sb.check_high_score()
+            self.sound_effects.play_alien_hit()
 
         if not self.aliens:
-            # Destroy existing bullets and create new fleet.
-            self.bullets.empty()
-            self._create_fleet()
-            self.settings.increase_speed()
+            self._start_new_level()
 
-            self.stats.level += 1
-            self.sb.prep_level()
+    def _start_new_level(self):
+        """Begin new level"""
+        # Destroy existing bullets and create new fleet.
+        self.bullets.empty()
+        self._create_fleet()
+        self.settings.increase_speed()
+
+        self.stats.level += 1
+        self.sb.prep_level()
 
     def _update_aliens(self):
         """Check if fleet is at an edge, then update the positions of all aliens in the fleet"""
@@ -236,6 +241,7 @@ class AlienInvasion:
             alien.rect.y += self.settings.fleet_drop_speed
 
         self.settings.fleet_direction *= -1
+        self.sound_effects.play_alien_change_dir()
 
     def _ship_hit(self):
         """Respond to the ship being hit by an alien."""

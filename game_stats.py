@@ -17,6 +17,7 @@ class GameStats:
         self.ships_left = self.settings.ship_limit
         self.score = 0
         self.level = 1
+        self.game_active = True
 
     def _get_high_score(self):
         with open('high_score.txt', 'r') as high_score_file:
